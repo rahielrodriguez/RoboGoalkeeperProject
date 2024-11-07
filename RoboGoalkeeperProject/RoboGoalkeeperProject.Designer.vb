@@ -27,6 +27,7 @@ Partial Class RoboGoalkeeperProject
         Me.SerialPort = New System.IO.Ports.SerialPort(Me.components)
         Me.ComButton = New System.Windows.Forms.Button()
         Me.PositionPictureBox = New System.Windows.Forms.PictureBox()
+        Me.ClearButton = New System.Windows.Forms.Button()
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -60,11 +61,21 @@ Partial Class RoboGoalkeeperProject
         Me.PositionPictureBox.TabIndex = 3
         Me.PositionPictureBox.TabStop = False
         '
+        'ClearButton
+        '
+        Me.ClearButton.Location = New System.Drawing.Point(682, 266)
+        Me.ClearButton.Name = "ClearButton"
+        Me.ClearButton.Size = New System.Drawing.Size(143, 83)
+        Me.ClearButton.TabIndex = 4
+        Me.ClearButton.Text = "Clear"
+        Me.ClearButton.UseVisualStyleBackColor = True
+        '
         'RoboGoalkeeperProject
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(837, 450)
+        Me.Controls.Add(Me.ClearButton)
         Me.Controls.Add(Me.PositionPictureBox)
         Me.Controls.Add(Me.ComButton)
         Me.Controls.Add(Me.PortComboBox)
@@ -79,4 +90,5 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents SerialPort As IO.Ports.SerialPort
     Friend WithEvents ComButton As Button
     Friend WithEvents PositionPictureBox As PictureBox
+    Friend WithEvents ClearButton As Button
 End Class

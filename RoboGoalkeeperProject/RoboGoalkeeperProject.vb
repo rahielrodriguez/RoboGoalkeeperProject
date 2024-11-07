@@ -62,29 +62,39 @@ Public Class RoboGoalkeeperProject
 
     Private Sub SerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort.DataReceived
 
-        Dim data(SerialPort.BytesToRead) As Byte
-        SerialPort.Read(data, 0, SerialPort.BytesToRead)
-        If data(2) = &H55 And data(3) = &HAA And data(4) = &H55 And data(5) = &HAA Then
-            For i = 0 To UBound(data)
+        Try
+            Dim data(SerialPort.BytesToRead) As Byte
+            SerialPort.Read(data, 0, SerialPort.BytesToRead)
+            If data(2) = &H55 And data(3) = &HAA And data(4) = &H55 And data(5) = &HAA And data.Length >= 18 Then
+                For i = 0 To UBound(data)
 
-                Console.Write($"{Hex(data(i))} ")
-            Next
-            Console.WriteLine()
-            Draw_PixyPosition(data(10), data(12))
-        End If
-        SerialPort.Read(data, 0, SerialPort.BytesToRead)
+                    Console.Write($"{Hex(data(i))} ")
+                Next
+                Console.WriteLine()
+                Draw_PixyPosition(data(11), data(12), data(10))
+            End If
+
+            SerialPort.Read(data, 0, SerialPort.BytesToRead)
+        Catch ex As Exception
+
+        End Try
     End Sub
-    Sub Draw_PixyPosition(newX#, newY#)
+    Sub Draw_PixyPosition(highByte#, newY#, lowByte#)
 
         Dim g As Graphics = PositionPictureBox.CreateGraphics
         Dim pen As New Pen(Color.Black)
-
         Static oldX#, oldY#
-
+        Dim newX#
         'g.TranslateTransform(0, 255 * -1)
 
+        newX = ((highByte * 256) + lowByte)
+
+        g.DrawLine(pen, CInt(oldX), CInt(oldY), CInt(newX), CInt(newY))
+
         Try
-            g.DrawLine(pen, CInt(oldX), CInt(oldY), CInt(newX), CInt(newY))
+            If newX > 0 Then
+                Console.WriteLine()
+            End If
         Catch ex As Exception
         End Try
         'Console.Write($"{newX} , {newY}")
@@ -95,5 +105,9 @@ Public Class RoboGoalkeeperProject
         pen.Dispose()
         g.Dispose()
 
+    End Sub
+
+    Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
+        PositionPictureBox.Refresh()
     End Sub
 End Class

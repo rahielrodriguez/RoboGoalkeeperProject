@@ -24,10 +24,10 @@ Partial Class RoboGoalkeeperProject
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.PortComboBox = New System.Windows.Forms.ComboBox()
-        Me.SendButton = New System.Windows.Forms.Button()
         Me.SerialPort = New System.IO.Ports.SerialPort(Me.components)
         Me.ComButton = New System.Windows.Forms.Button()
-        Me.Timer = New System.Windows.Forms.Timer(Me.components)
+        Me.PositionPictureBox = New System.Windows.Forms.PictureBox()
+        CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'PortComboBox
@@ -38,15 +38,6 @@ Partial Class RoboGoalkeeperProject
         Me.PortComboBox.Size = New System.Drawing.Size(212, 24)
         Me.PortComboBox.TabIndex = 0
         '
-        'SendButton
-        '
-        Me.SendButton.Location = New System.Drawing.Point(645, 355)
-        Me.SendButton.Name = "SendButton"
-        Me.SendButton.Size = New System.Drawing.Size(143, 83)
-        Me.SendButton.TabIndex = 1
-        Me.SendButton.Text = "Send"
-        Me.SendButton.UseVisualStyleBackColor = True
-        '
         'SerialPort
         '
         Me.SerialPort.BaudRate = 15200
@@ -54,34 +45,38 @@ Partial Class RoboGoalkeeperProject
         '
         'ComButton
         '
-        Me.ComButton.Location = New System.Drawing.Point(645, 266)
+        Me.ComButton.Location = New System.Drawing.Point(682, 355)
         Me.ComButton.Name = "ComButton"
         Me.ComButton.Size = New System.Drawing.Size(143, 83)
         Me.ComButton.TabIndex = 2
         Me.ComButton.Text = "Com"
         Me.ComButton.UseVisualStyleBackColor = True
         '
-        'Timer
+        'PositionPictureBox
         '
-        Me.Timer.Interval = 250
+        Me.PositionPictureBox.Location = New System.Drawing.Point(12, 109)
+        Me.PositionPictureBox.Name = "PositionPictureBox"
+        Me.PositionPictureBox.Size = New System.Drawing.Size(640, 240)
+        Me.PositionPictureBox.TabIndex = 3
+        Me.PositionPictureBox.TabStop = False
         '
         'RoboGoalkeeperProject
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.ClientSize = New System.Drawing.Size(837, 450)
+        Me.Controls.Add(Me.PositionPictureBox)
         Me.Controls.Add(Me.ComButton)
-        Me.Controls.Add(Me.SendButton)
         Me.Controls.Add(Me.PortComboBox)
         Me.Name = "RoboGoalkeeperProject"
         Me.Text = "RoboGoalkeeper"
+        CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
 
     Friend WithEvents PortComboBox As ComboBox
-    Friend WithEvents SendButton As Button
     Friend WithEvents SerialPort As IO.Ports.SerialPort
     Friend WithEvents ComButton As Button
-    Friend WithEvents Timer As Timer
+    Friend WithEvents PositionPictureBox As PictureBox
 End Class

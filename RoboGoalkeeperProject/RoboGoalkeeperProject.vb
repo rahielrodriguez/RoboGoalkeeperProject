@@ -4,7 +4,7 @@ Imports System.Windows.Forms.ComponentModel.Com2Interop
 Imports System.Runtime.InteropServices
 
 Public Class RoboGoalkeeperProject
-    Sub WriteDigital()
+    Sub WritePixyData()
         Dim Data(3) As Byte
         Data(0) = &HC1
         Data(1) = &HAE
@@ -50,30 +50,6 @@ Public Class RoboGoalkeeperProject
     Private Sub ComButton_Click(sender As Object, e As EventArgs) Handles ComButton.Click
         GetPorts()
     End Sub
-
-    Private Sub SendButton_Click(sender As Object, e As EventArgs) Handles SendButton.Click
-        WriteDigital()
-        'Console.WriteLine(SerialPort.BytesToRead)
-        'Dim data(SerialPort.BytesToRead) As Byte
-        'SerialPort.Read(data, 0, SerialPort.BytesToRead)
-
-        'Console.WriteLine($"Bytes to read: {SerialPort.BytesToRead}")
-        'Console.WriteLine($"Byte 0: {Hex(data(0))}")
-        'Console.WriteLine($"Byte 1: {Hex(data(1))}")
-        'Console.WriteLine($"Byte 2: {Hex(data(2))}")
-        'Console.WriteLine($"Byte 3: {Hex(data(3))}")
-        'Console.WriteLine($"Byte 4: {Hex(data(4))}")
-        'Console.WriteLine($"Byte 5: {Hex(data(5))}")
-        'Console.WriteLine($"Byte 6: {Hex(data(6))}")
-        'Console.WriteLine($"Byte 7: {Hex(data(7))}")
-        'Console.WriteLine($"Byte 8: {Hex(data(8))}")
-        'Console.WriteLine($"Byte 9: {Hex(data(9))}")
-        'Console.WriteLine($"Byte 10: {Hex(data(10))}")
-        'Console.WriteLine($"Byte 11: {Hex(data(11))}")
-        'Console.WriteLine($"Byte 12: {Hex(data(12))}")
-
-    End Sub
-
     Private Sub PortComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles PortComboBox.SelectedIndexChanged
         SerialConnect(PortComboBox.SelectedItem)
     End Sub
@@ -85,24 +61,39 @@ Public Class RoboGoalkeeperProject
     End Sub
 
     Private Sub SerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort.DataReceived
-        'Sleep(10)
-        Dim data(SerialPort.BytesToRead) As Byte
-        'Console.WriteLine(SerialPort.BytesToRead)
-        SerialPort.Read(data, 0, SerialPort.BytesToRead)
 
-        If data(0) = &H0 And data(1) = &H0 And data(2) = &H55 And data(3) = &HAA Then
+        Dim data(SerialPort.BytesToRead) As Byte
+        SerialPort.Read(data, 0, SerialPort.BytesToRead)
+        If data(2) = &H55 And data(3) = &HAA And data(4) = &H55 And data(5) = &HAA Then
             For i = 0 To UBound(data)
-                'Console.Write($"Byte {i}: {Hex(data(i))}")
+
                 Console.Write($"{Hex(data(i))} ")
             Next
             Console.WriteLine()
+            Draw_PixyPosition(data(10), data(12))
         End If
-        'Console.WriteLine(SerialPort.BytesToRead)
         SerialPort.Read(data, 0, SerialPort.BytesToRead)
     End Sub
+    Sub Draw_PixyPosition(newX#, newY#)
 
-    Private Sub Timer_Tick(sender As Object, e As EventArgs) Handles Timer.Tick
-        WriteDigital()
+        Dim g As Graphics = PositionPictureBox.CreateGraphics
+        Dim pen As New Pen(Color.Black)
+
+        Static oldX#, oldY#
+
+        'g.TranslateTransform(0, 255 * -1)
+
+        Try
+            g.DrawLine(pen, CInt(oldX), CInt(oldY), CInt(newX), CInt(newY))
+        Catch ex As Exception
+        End Try
+        'Console.Write($"{newX} , {newY}")
+        'store values for start of next line segment
+        oldX = newX
+        oldY = newY
+
+        pen.Dispose()
+        g.Dispose()
 
     End Sub
 End Class

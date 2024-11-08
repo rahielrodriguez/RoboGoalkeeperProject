@@ -120,5 +120,14 @@
     </None>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Soccer Ball.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Soccer ball.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Soccer Ball.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

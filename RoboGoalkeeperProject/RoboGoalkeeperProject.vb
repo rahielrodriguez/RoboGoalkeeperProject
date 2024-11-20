@@ -29,7 +29,8 @@ Public Class RoboGoalkeeperProject
     End Sub
 
     Private Sub SerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort.DataReceived
-
+        'Dim steps_H As Integer
+        'Dim steps_L As Integer
         Try
             Dim data(SerialPort.BytesToRead) As Byte
             SerialPort.Read(data, 0, SerialPort.BytesToRead)
@@ -40,6 +41,12 @@ Public Class RoboGoalkeeperProject
                 Next
                 Console.WriteLine()
                 Draw_PixyPosition(data(11), data(12), data(10))
+                'ElseIf data(0) = &H24 Then
+                '    steps_H = CInt(data(1))
+                '    steps_L = CInt(data(2))
+                '    Console.WriteLine($"{Hex(data(0))}")
+                '    Console.WriteLine($"{Hex(data(1))}")
+                '    Console.WriteLine($"{Hex(data(2))}")
             End If
 
             SerialPort.Read(data, 0, SerialPort.BytesToRead)
@@ -90,5 +97,15 @@ Public Class RoboGoalkeeperProject
 
     Private Sub ShowImageButton_Click(sender As Object, e As EventArgs) Handles ShowImageButton.Click
         PositionPictureBox.Image = image
+    End Sub
+
+    Private Sub HomeButton_Click(sender As Object, e As EventArgs) Handles HomeButton.Click
+        Dim tx_Data(0) As Byte
+        tx_Data(0) = &H24
+        SerialPort.Write(tx_Data, 0, 1)
+        Sleep(5)
+        Dim rx_Data(SerialPort.BytesToRead) As Byte
+        SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
+        Console.WriteLine($"{Hex(rx_Data(0))}")
     End Sub
 End Class

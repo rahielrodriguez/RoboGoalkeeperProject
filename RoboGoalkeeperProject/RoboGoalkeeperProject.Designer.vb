@@ -32,6 +32,7 @@ Partial Class RoboGoalkeeperProject
         Me.ExitButton = New System.Windows.Forms.Button()
         Me.SendButton = New System.Windows.Forms.Button()
         Me.HomeButton = New System.Windows.Forms.Button()
+        Me.StepsTextBox = New System.Windows.Forms.TextBox()
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -110,11 +111,19 @@ Partial Class RoboGoalkeeperProject
         Me.HomeButton.Text = "Go Home"
         Me.HomeButton.UseVisualStyleBackColor = True
         '
+        'StepsTextBox
+        '
+        Me.StepsTextBox.Location = New System.Drawing.Point(12, 288)
+        Me.StepsTextBox.Name = "StepsTextBox"
+        Me.StepsTextBox.Size = New System.Drawing.Size(143, 22)
+        Me.StepsTextBox.TabIndex = 9
+        '
         'RoboGoalkeeperProject
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(911, 450)
+        Me.Controls.Add(Me.StepsTextBox)
         Me.Controls.Add(Me.HomeButton)
         Me.Controls.Add(Me.SendButton)
         Me.Controls.Add(Me.ExitButton)
@@ -127,6 +136,7 @@ Partial Class RoboGoalkeeperProject
         Me.Text = "RoboGoalkeeper"
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 
@@ -139,4 +149,5 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents ExitButton As Button
     Friend WithEvents SendButton As Button
     Friend WithEvents HomeButton As Button
+    Friend WithEvents StepsTextBox As TextBox
 End Class

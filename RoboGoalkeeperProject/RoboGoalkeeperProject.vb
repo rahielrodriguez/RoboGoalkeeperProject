@@ -41,12 +41,6 @@ Public Class RoboGoalkeeperProject
                 Next
                 Console.WriteLine()
                 Draw_PixyPosition(data(11), data(12), data(10))
-                'ElseIf data(0) = &H24 Then
-                '    steps_H = CInt(data(1))
-                '    steps_L = CInt(data(2))
-                '    Console.WriteLine($"{Hex(data(0))}")
-                '    Console.WriteLine($"{Hex(data(1))}")
-                '    Console.WriteLine($"{Hex(data(2))}")
             End If
 
             SerialPort.Read(data, 0, SerialPort.BytesToRead)
@@ -107,5 +101,32 @@ Public Class RoboGoalkeeperProject
         Dim rx_Data(SerialPort.BytesToRead) As Byte
         SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
         Console.WriteLine($"{Hex(rx_Data(0))}")
+    End Sub
+
+    Private Sub SendButton_Click(sender As Object, e As EventArgs) Handles SendButton.Click
+        Try
+            Dim tx_Data(0) As Byte
+            Dim tx_steps_Data(0) As Byte
+            Dim steps As Integer = CInt(StepsTextBox.Text)
+            tx_Data(0) = &H5E
+            SerialPort.Write(tx_Data, 0, 1)
+            Sleep(5)
+            Dim rx_Data(SerialPort.BytesToRead) As Byte
+            SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
+            Console.WriteLine($"{Hex(rx_Data(0))}")
+            If rx_Data(0) = &H5E Then
+                tx_steps_Data(0) = steps
+                SerialPort.Write(tx_steps_Data, 0, 1)
+                Console.WriteLine($"{Hex(tx_steps_Data(0))}")
+                Sleep(5)
+                SerialPort.Read(rx_Data, 1, SerialPort.BytesToRead)
+                Console.WriteLine($"{Hex(rx_Data(0))}")
+                If rx_Data(1) = &H5F Then
+                    MsgBox($"{steps} steps done!")
+                End If
+            End If
+        Catch ex As Exception
+            MsgBox("Place a value in steps textbox")
+        End Try
     End Sub
 End Class

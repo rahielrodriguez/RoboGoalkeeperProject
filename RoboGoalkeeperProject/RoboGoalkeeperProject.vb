@@ -2,6 +2,7 @@
 Imports System.Threading.Thread
 Imports System.Windows.Forms.ComponentModel.Com2Interop
 Imports System.Runtime.InteropServices
+Imports System.Reflection
 
 Public Class RoboGoalkeeperProject
     ''' <summary>
@@ -64,6 +65,14 @@ Public Class RoboGoalkeeperProject
         g.Dispose()
 
     End Sub
+    Function lowByte_Steps_Conversion() As Integer
+        Dim lowByte = (CInt(StepsTextBox.Text) Mod 256)
+        Return lowByte
+    End Function
+    Function highByte_Steps_Conversion() As Integer
+        Dim highByte = CInt(StepsTextBox.Text) / 256
+        Return highByte
+    End Function
     Public Shared Function ResizeImage(ByVal InputBitmap As Bitmap, width As Integer, height As Integer) As Bitmap
         Return New Bitmap(InputBitmap, New Size(width, height))
     End Function
@@ -88,11 +97,9 @@ Public Class RoboGoalkeeperProject
     Private Sub ExitButton_Click(sender As Object, e As EventArgs) Handles ExitButton.Click
         Me.Close()
     End Sub
-
     Private Sub ShowImageButton_Click(sender As Object, e As EventArgs) Handles ShowImageButton.Click
         PositionPictureBox.Image = image
     End Sub
-
     Private Sub HomeButton_Click(sender As Object, e As EventArgs) Handles HomeButton.Click
         Dim tx_Data(0) As Byte
         tx_Data(0) = &H24
@@ -102,31 +109,51 @@ Public Class RoboGoalkeeperProject
         SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
         Console.WriteLine($"{Hex(rx_Data(0))}")
     End Sub
-
     Private Sub SendButton_Click(sender As Object, e As EventArgs) Handles SendButton.Click
-        Try
-            Dim tx_Data(0) As Byte
-            Dim tx_steps_Data(0) As Byte
-            Dim steps As Integer = CInt(StepsTextBox.Text)
-            tx_Data(0) = &H5E
-            SerialPort.Write(tx_Data, 0, 1)
-            Sleep(5)
-            Dim rx_Data(SerialPort.BytesToRead) As Byte
+
+        Dim tx_Data(0) As Byte
+        Dim tx_steps_Data(1) As Byte
+        Dim rx_Data(500) As Byte
+        Dim steps_H As Integer = highByte_Steps_Conversion()
+        Dim steps_L As Integer = lowByte_Steps_Conversion()
+        tx_Data(0) = &H5E
+        'SerialPort.Read(rx_Data, 0, SerialPort.)
+        SerialPort.DiscardInBuffer()
+        SerialPort.Write(tx_Data, 0, 1)
+        Console.WriteLine($"Transmitted data to the PIC = {Hex(tx_Data(0))}")
+        Sleep(5)
+        'Console.WriteLine($"{(steps_H * 256) + steps_L}")
+        ReDim rx_Data(SerialPort.BytesToRead)
+        SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
+        'Console.WriteLine($"Received handshake = {Hex(rx_Data(0))}")
+        Console.WriteLine($"Handshake data =")
+
+        For i = 0 To UBound(rx_Data)
+            Console.WriteLine($"{i} = {ChrW(rx_Data(i))}, {Hex(rx_Data(i))}")
+        Next
+        'Console.WriteLine($"{(ChrW(rx_Data(1)))}")
+
+        If rx_Data(0) = &H5E Then
+            tx_steps_Data(0) = steps_H
+            tx_steps_Data(1) = steps_L
+
+            Console.WriteLine($"transmit data =")
+            For i = 0 To UBound(tx_steps_Data)
+                Console.WriteLine($"{i} = {ChrW(tx_steps_Data(i))}, {Hex(tx_steps_Data(i))}, {tx_steps_Data(i)}")
+            Next
+
+            SerialPort.DiscardInBuffer()
+            SerialPort.Write(tx_steps_Data, 0, 2)
+            Sleep(5000)
+            ReDim rx_Data(SerialPort.BytesToRead)
             SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
-            Console.WriteLine($"{Hex(rx_Data(0))}")
-            If rx_Data(0) = &H5E Then
-                tx_steps_Data(0) = steps
-                SerialPort.Write(tx_steps_Data, 0, 1)
-                Console.WriteLine($"{Hex(tx_steps_Data(0))}")
-                Sleep(5)
-                SerialPort.Read(rx_Data, 1, SerialPort.BytesToRead)
-                Console.WriteLine($"{Hex(rx_Data(0))}")
-                If rx_Data(1) = &H5F Then
-                    MsgBox($"{steps} steps done!")
-                End If
-            End If
-        Catch ex As Exception
-            MsgBox("Place a value in steps textbox")
-        End Try
+            Console.WriteLine($"received data =")
+
+            For i = 0 To UBound(rx_Data)
+                Console.WriteLine($"{i} = {ChrW(rx_Data(i))}, {Hex(rx_Data(i))}, {rx_Data(i)}")
+            Next
+
+        End If
     End Sub
+
 End Class

@@ -12,29 +12,47 @@ Public Class RoboGoalkeeperProject
     ''' </summary>
     ''' <returns>Byte Array</returns>'
     Dim image As New Bitmap("C:\Users\Rahi\OneDrive\Desktop\ISU\Robotics\5th Semester\Final Project\RoboGoalkeeperProject\RoboGoalkeeperProject\Resources\Soccer Ball.png")
-    Sub SerialConnect(portName As String)
-        SerialPort.Close()
-        SerialPort.PortName = portName
-        SerialPort.BaudRate = 115200
-        SerialPort.Open()
 
+    '--------------------------------------SERIAL COM---------------------------------------------------------------------------
+    Sub SerialConnect1(portName As String)
+        SerialPort1.Close()
+        SerialPort1.PortName = portName
+        SerialPort1.BaudRate = 115200
+        SerialPort1.Open()
     End Sub
-    Sub GetPorts()
+    Sub SerialConnect2(portName As String)
+        SerialPort2.Close()
+        SerialPort2.PortName = portName
+        SerialPort2.BaudRate = 115200
+        SerialPort2.Open()
+    End Sub
+    Sub GetPorts1()
         'add all available ports to the port combobox
-        PortComboBox.Items.Clear()
+        Port1ComboBox.Items.Clear()
         For Each s As String In SerialPort.GetPortNames()
-            PortComboBox.Items.Add($"{s}")
+            Port1ComboBox.Items.Add($"{s}")
         Next
 
-        PortComboBox.SelectedIndex = 0
+        Port1ComboBox.SelectedIndex = 0
     End Sub
+    Sub GetPorts2()
+        Port2ComboBox.Items.Clear()
+        For Each s As String In SerialPort.GetPortNames()
+            Port2ComboBox.Items.Add($"{s}")
+        Next
 
-    Private Sub SerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort.DataReceived
+        Port2ComboBox.SelectedIndex = 1
+    End Sub
+    '-----------------------------------------PIXY FUNCTION---------------------------------------------------------------------
+    Public Shared Function ResizeImage(ByVal InputBitmap As Bitmap, width As Integer, height As Integer) As Bitmap
+        Return New Bitmap(InputBitmap, New Size(width, height))
+    End Function
+    Private Sub SerialPort2_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort2.DataReceived
         'Dim steps_H As Integer
         'Dim steps_L As Integer
         Try
-            Dim data(SerialPort.BytesToRead) As Byte
-            SerialPort.Read(data, 0, SerialPort.BytesToRead)
+            Dim data(SerialPort2.BytesToRead) As Byte
+            SerialPort2.Read(data, 0, SerialPort2.BytesToRead)
             If data(2) = &H55 And data(3) = &HAA And data(4) = &H55 And data(5) = &HAA And data.Length >= 18 Then
                 For i = 0 To UBound(data)
 
@@ -44,7 +62,7 @@ Public Class RoboGoalkeeperProject
                 Draw_PixyPosition(data(11), data(12), data(10))
             End If
 
-            SerialPort.Read(data, 0, SerialPort.BytesToRead)
+            SerialPort2.Read(data, 0, SerialPort2.BytesToRead)
         Catch ex As Exception
 
         End Try
@@ -61,10 +79,12 @@ Public Class RoboGoalkeeperProject
         oldX = newX
         oldY = newY
 
+        'XLabel.Text = $"{newX}"
         pen.Dispose()
         g.Dispose()
 
     End Sub
+    '-------------------------------------------PIC16F1788 COM------------------------------------------------------------------
     Function lowByte_Steps_Conversion() As Integer
         Dim lowByte = (CInt(StepsTextBox.Text) Mod 256)
         Return lowByte
@@ -73,40 +93,38 @@ Public Class RoboGoalkeeperProject
         Dim highByte = CInt(StepsTextBox.Text) / 256
         Return highByte
     End Function
-    Public Shared Function ResizeImage(ByVal InputBitmap As Bitmap, width As Integer, height As Integer) As Bitmap
-        Return New Bitmap(InputBitmap, New Size(width, height))
-    End Function
-
+    '---------------------------------------------BUTTONS AND FUNCTIONS---------------------------------------------------------
     Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
         PositionPictureBox.Refresh()
     End Sub
     Private Sub ComButton_Click(sender As Object, e As EventArgs) Handles ComButton.Click
-        GetPorts()
+        GetPorts1()
     End Sub
-    Private Sub PortComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles PortComboBox.SelectedIndexChanged
-        SerialConnect(PortComboBox.SelectedItem)
+    Private Sub Port1ComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Port1ComboBox.SelectedIndexChanged
+        SerialConnect1(Port1ComboBox.SelectedItem)
     End Sub
-
+    Private Sub Port2ComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Port2ComboBox.SelectedIndexChanged
+        SerialConnect2(Port2ComboBox.SelectedItem)
+    End Sub
     Private Sub SerialComExample_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        GetPorts()
-        Dim data(SerialPort.BytesToRead) As Byte
-        SerialPort.Read(data, 0, SerialPort.BytesToRead)
+        GetPorts1()
+        GetPorts2()
+        Dim data(SerialPort2.BytesToRead) As Byte
+        SerialPort2.Read(data, 0, SerialPort2.BytesToRead)
         image = ResizeImage(image, 20, 20)
         PositionPictureBox.BackColor = Color.Green
+        XLabel.Text = ""
     End Sub
     Private Sub ExitButton_Click(sender As Object, e As EventArgs) Handles ExitButton.Click
         Me.Close()
     End Sub
-    Private Sub ShowImageButton_Click(sender As Object, e As EventArgs) Handles ShowImageButton.Click
-        PositionPictureBox.Image = image
-    End Sub
     Private Sub HomeButton_Click(sender As Object, e As EventArgs) Handles HomeButton.Click
         Dim tx_Data(0) As Byte
         tx_Data(0) = &H24
-        SerialPort.Write(tx_Data, 0, 1)
+        SerialPort1.Write(tx_Data, 0, 1)
         Sleep(5)
-        Dim rx_Data(SerialPort.BytesToRead) As Byte
-        SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
+        Dim rx_Data(SerialPort1.BytesToRead) As Byte
+        SerialPort1.Read(rx_Data, 0, SerialPort1.BytesToRead)
         Console.WriteLine($"{Hex(rx_Data(0))}")
     End Sub
     Private Sub SendButton_Click(sender As Object, e As EventArgs) Handles SendButton.Click
@@ -118,13 +136,13 @@ Public Class RoboGoalkeeperProject
         Dim steps_L As Integer = lowByte_Steps_Conversion()
         tx_Data(0) = &H5E
         'SerialPort.Read(rx_Data, 0, SerialPort.)
-        SerialPort.DiscardInBuffer()
-        SerialPort.Write(tx_Data, 0, 1)
+        SerialPort1.DiscardInBuffer()
+        SerialPort1.Write(tx_Data, 0, 1)
         Console.WriteLine($"Transmitted data to the PIC = {Hex(tx_Data(0))}")
         Sleep(5)
         'Console.WriteLine($"{(steps_H * 256) + steps_L}")
-        ReDim rx_Data(SerialPort.BytesToRead)
-        SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
+        ReDim rx_Data(SerialPort1.BytesToRead)
+        SerialPort1.Read(rx_Data, 0, SerialPort1.BytesToRead)
         'Console.WriteLine($"Received handshake = {Hex(rx_Data(0))}")
         Console.WriteLine($"Handshake data =")
 
@@ -142,11 +160,11 @@ Public Class RoboGoalkeeperProject
                 Console.WriteLine($"{i} = {ChrW(tx_steps_Data(i))}, {Hex(tx_steps_Data(i))}, {tx_steps_Data(i)}")
             Next
 
-            SerialPort.DiscardInBuffer()
-            SerialPort.Write(tx_steps_Data, 0, 2)
+            SerialPort1.DiscardInBuffer()
+            SerialPort1.Write(tx_steps_Data, 0, 2)
             Sleep(5000)
-            ReDim rx_Data(SerialPort.BytesToRead)
-            SerialPort.Read(rx_Data, 0, SerialPort.BytesToRead)
+            ReDim rx_Data(SerialPort1.BytesToRead)
+            SerialPort1.Read(rx_Data, 0, SerialPort1.BytesToRead)
             Console.WriteLine($"received data =")
 
             For i = 0 To UBound(rx_Data)

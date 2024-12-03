@@ -24,7 +24,7 @@ Partial Class RoboGoalkeeperProject
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.Port1ComboBox = New System.Windows.Forms.ComboBox()
-        Me.SerialPort1 = New System.IO.Ports.SerialPort(Me.components)
+        Me.PixySerialPort = New System.IO.Ports.SerialPort(Me.components)
         Me.ComButton = New System.Windows.Forms.Button()
         Me.PositionPictureBox = New System.Windows.Forms.PictureBox()
         Me.ClearButton = New System.Windows.Forms.Button()
@@ -33,7 +33,7 @@ Partial Class RoboGoalkeeperProject
         Me.HomeButton = New System.Windows.Forms.Button()
         Me.StepsTextBox = New System.Windows.Forms.TextBox()
         Me.Port2ComboBox = New System.Windows.Forms.ComboBox()
-        Me.SerialPort2 = New System.IO.Ports.SerialPort(Me.components)
+        Me.PICSerialPort = New System.IO.Ports.SerialPort(Me.components)
         Me.XLabel = New System.Windows.Forms.Label()
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -46,10 +46,10 @@ Partial Class RoboGoalkeeperProject
         Me.Port1ComboBox.Size = New System.Drawing.Size(212, 24)
         Me.Port1ComboBox.TabIndex = 0
         '
-        'SerialPort1
+        'PixySerialPort
         '
-        Me.SerialPort1.BaudRate = 115200
-        Me.SerialPort1.ReceivedBytesThreshold = 18
+        Me.PixySerialPort.BaudRate = 115200
+        Me.PixySerialPort.ReceivedBytesThreshold = 18
         '
         'ComButton
         '
@@ -119,17 +119,17 @@ Partial Class RoboGoalkeeperProject
         Me.Port2ComboBox.Size = New System.Drawing.Size(212, 24)
         Me.Port2ComboBox.TabIndex = 10
         '
-        'SerialPort2
+        'PICSerialPort
         '
-        Me.SerialPort2.BaudRate = 115200
-        Me.SerialPort2.ReceivedBytesThreshold = 18
+        Me.PICSerialPort.BaudRate = 115200
+        Me.PICSerialPort.ReceivedBytesThreshold = 4
         '
         'XLabel
         '
         Me.XLabel.AutoSize = True
         Me.XLabel.Location = New System.Drawing.Point(161, 294)
         Me.XLabel.Name = "XLabel"
-        Me.XLabel.Size = New System.Drawing.Size(61, 20)
+        Me.XLabel.Size = New System.Drawing.Size(49, 16)
         Me.XLabel.TabIndex = 11
         Me.XLabel.Text = "XLabel"
         '
@@ -157,7 +157,7 @@ Partial Class RoboGoalkeeperProject
     End Sub
 
     Friend WithEvents Port1ComboBox As ComboBox
-    Friend WithEvents SerialPort1 As IO.Ports.SerialPort
+    Friend WithEvents PixySerialPort As IO.Ports.SerialPort
     Friend WithEvents ComButton As Button
     Friend WithEvents PositionPictureBox As PictureBox
     Friend WithEvents ClearButton As Button
@@ -166,6 +166,6 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents HomeButton As Button
     Friend WithEvents StepsTextBox As TextBox
     Friend WithEvents Port2ComboBox As ComboBox
-    Friend WithEvents SerialPort2 As IO.Ports.SerialPort
+    Friend WithEvents PICSerialPort As IO.Ports.SerialPort
     Friend WithEvents XLabel As Label
 End Class

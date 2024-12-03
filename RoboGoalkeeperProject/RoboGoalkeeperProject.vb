@@ -15,16 +15,16 @@ Public Class RoboGoalkeeperProject
 
     '--------------------------------------SERIAL COM---------------------------------------------------------------------------
     Sub SerialConnect1(portName As String)
-        SerialPort1.Close()
-        SerialPort1.PortName = portName
-        SerialPort1.BaudRate = 115200
-        SerialPort1.Open()
+        PixySerialPort.Close()
+        PixySerialPort.PortName = portName
+        PixySerialPort.BaudRate = 115200
+        PixySerialPort.Open()
     End Sub
     Sub SerialConnect2(portName As String)
-        SerialPort2.Close()
-        SerialPort2.PortName = portName
-        SerialPort2.BaudRate = 115200
-        SerialPort2.Open()
+        PICSerialPort.Close()
+        PICSerialPort.PortName = portName
+        PICSerialPort.BaudRate = 115200
+        PICSerialPort.Open()
     End Sub
     Sub GetPorts1()
         'add all available ports to the port combobox
@@ -47,22 +47,22 @@ Public Class RoboGoalkeeperProject
     Public Shared Function ResizeImage(ByVal InputBitmap As Bitmap, width As Integer, height As Integer) As Bitmap
         Return New Bitmap(InputBitmap, New Size(width, height))
     End Function
-    Private Sub SerialPort2_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort2.DataReceived
+    Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles PixySerialPort.DataReceived
         'Dim steps_H As Integer
         'Dim steps_L As Integer
         Try
-            Dim data(SerialPort2.BytesToRead) As Byte
-            SerialPort2.Read(data, 0, SerialPort2.BytesToRead)
+            Dim data(PixySerialPort.BytesToRead) As Byte
+            PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
             If data(2) = &H55 And data(3) = &HAA And data(4) = &H55 And data(5) = &HAA And data.Length >= 18 Then
-                For i = 0 To UBound(data)
+                'For i = 0 To UBound(data)
 
-                    Console.Write($"{Hex(data(i))} ")
-                Next
-                Console.WriteLine()
+                '    Console.Write($"{Hex(data(i))} ")
+                'Next
+                'Console.WriteLine()
                 Draw_PixyPosition(data(11), data(12), data(10))
             End If
 
-            SerialPort2.Read(data, 0, SerialPort2.BytesToRead)
+            PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
         Catch ex As Exception
 
         End Try
@@ -93,7 +93,20 @@ Public Class RoboGoalkeeperProject
         Dim highByte = CInt(StepsTextBox.Text) / 256
         Return highByte
     End Function
-    '---------------------------------------------BUTTONS AND FUNCTIONS---------------------------------------------------------
+    Private Sub PICSerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles PICSerialPort.DataReceived
+        Console.WriteLine(PICSerialPort.BytesToRead)
+        Dim port_Data As Integer = PICSerialPort.BytesToRead
+        Dim data(port_Data) As Byte
+        PICSerialPort.Read(data, 0, port_Data)
+        For i = 0 To UBound(data)
+            Console.Write($"{Hex(data(i))} ")
+        Next
+        Console.WriteLine()
+        'Console.Write($"{(data(1) / 256) + data(2)}")
+        PICSerialPort.DiscardInBuffer()
+    End Sub
+
+    '---------------------------------------------BUTTONS AND FORM----------------------------------------------------------------
     Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
         PositionPictureBox.Refresh()
     End Sub
@@ -109,8 +122,10 @@ Public Class RoboGoalkeeperProject
     Private Sub SerialComExample_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         GetPorts1()
         GetPorts2()
-        Dim data(SerialPort2.BytesToRead) As Byte
-        SerialPort2.Read(data, 0, SerialPort2.BytesToRead)
+        Dim data1(PixySerialPort.BytesToRead) As Byte
+        PixySerialPort.Read(data1, 0, PixySerialPort.BytesToRead)
+        Dim data2(PICSerialPort.BytesToRead) As Byte
+        PICSerialPort.Read(data2, 0, PICSerialPort.BytesToRead)
         image = ResizeImage(image, 20, 20)
         PositionPictureBox.BackColor = Color.Green
         XLabel.Text = ""
@@ -121,57 +136,29 @@ Public Class RoboGoalkeeperProject
     Private Sub HomeButton_Click(sender As Object, e As EventArgs) Handles HomeButton.Click
         Dim tx_Data(0) As Byte
         tx_Data(0) = &H24
-        SerialPort1.Write(tx_Data, 0, 1)
+        PICSerialPort.Write(tx_Data, 0, 1)
         Sleep(5)
-        Dim rx_Data(SerialPort1.BytesToRead) As Byte
-        SerialPort1.Read(rx_Data, 0, SerialPort1.BytesToRead)
-        Console.WriteLine($"{Hex(rx_Data(0))}")
+        Dim rx_Data(PICSerialPort.BytesToRead) As Byte
+        PICSerialPort.Read(rx_Data, 0, PICSerialPort.BytesToRead)
+        Console.WriteLine($"Homing Handshake = {Hex(rx_Data(0))}")
     End Sub
     Private Sub SendButton_Click(sender As Object, e As EventArgs) Handles SendButton.Click
-
-        Dim tx_Data(0) As Byte
-        Dim tx_steps_Data(1) As Byte
+        HomeButton.Enabled = False
+        Dim tx_Data(2) As Byte
         Dim rx_Data(500) As Byte
         Dim steps_H As Integer = highByte_Steps_Conversion()
         Dim steps_L As Integer = lowByte_Steps_Conversion()
+
         tx_Data(0) = &H5E
-        'SerialPort.Read(rx_Data, 0, SerialPort.)
-        SerialPort1.DiscardInBuffer()
-        SerialPort1.Write(tx_Data, 0, 1)
-        Console.WriteLine($"Transmitted data to the PIC = {Hex(tx_Data(0))}")
+        tx_Data(1) = steps_H
+        tx_Data(2) = steps_L
+
+        PICSerialPort.DiscardInBuffer()
         Sleep(5)
-        'Console.WriteLine($"{(steps_H * 256) + steps_L}")
-        ReDim rx_Data(SerialPort1.BytesToRead)
-        SerialPort1.Read(rx_Data, 0, SerialPort1.BytesToRead)
-        'Console.WriteLine($"Received handshake = {Hex(rx_Data(0))}")
-        Console.WriteLine($"Handshake data =")
-
-        For i = 0 To UBound(rx_Data)
-            Console.WriteLine($"{i} = {ChrW(rx_Data(i))}, {Hex(rx_Data(i))}")
-        Next
-        'Console.WriteLine($"{(ChrW(rx_Data(1)))}")
-
-        If rx_Data(0) = &H5E Then
-            tx_steps_Data(0) = steps_H
-            tx_steps_Data(1) = steps_L
-
-            Console.WriteLine($"transmit data =")
-            For i = 0 To UBound(tx_steps_Data)
-                Console.WriteLine($"{i} = {ChrW(tx_steps_Data(i))}, {Hex(tx_steps_Data(i))}, {tx_steps_Data(i)}")
-            Next
-
-            SerialPort1.DiscardInBuffer()
-            SerialPort1.Write(tx_steps_Data, 0, 2)
-            Sleep(5000)
-            ReDim rx_Data(SerialPort1.BytesToRead)
-            SerialPort1.Read(rx_Data, 0, SerialPort1.BytesToRead)
-            Console.WriteLine($"received data =")
-
-            For i = 0 To UBound(rx_Data)
-                Console.WriteLine($"{i} = {ChrW(rx_Data(i))}, {Hex(rx_Data(i))}, {rx_Data(i)}")
-            Next
-
-        End If
+        PICSerialPort.Write(tx_Data, 0, 3)
+        Sleep(500)
+        ReDim rx_Data(PICSerialPort.BytesToRead)
+        PICSerialPort.Read(rx_Data, 0, PICSerialPort.BytesToRead)
+        HomeButton.Enabled = True
     End Sub
-
 End Class

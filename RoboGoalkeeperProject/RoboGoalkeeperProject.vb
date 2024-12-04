@@ -33,7 +33,7 @@ Public Class RoboGoalkeeperProject
             Port1ComboBox.Items.Add($"{s}")
         Next
 
-        Port1ComboBox.SelectedIndex = 0
+        Port1ComboBox.SelectedIndex = 1
     End Sub
     Sub GetPorts2()
         Port2ComboBox.Items.Clear()
@@ -41,7 +41,7 @@ Public Class RoboGoalkeeperProject
             Port2ComboBox.Items.Add($"{s}")
         Next
 
-        Port2ComboBox.SelectedIndex = 1
+        Port2ComboBox.SelectedIndex = 0
     End Sub
     '-----------------------------------------PIXY FUNCTION---------------------------------------------------------------------
     Public Shared Function ResizeImage(ByVal InputBitmap As Bitmap, width As Integer, height As Integer) As Bitmap
@@ -60,6 +60,8 @@ Public Class RoboGoalkeeperProject
                 'Next
                 'Console.WriteLine()
                 Draw_PixyPosition(data(11), data(12), data(10))
+                Console.WriteLine($"Pixels{((CInt(data(11))) * 256) + (CInt(data(10)) Mod 256)}")
+                Console.WriteLine($"Steps = {transform_XPixy(data(11), data(10))}")
             End If
 
             PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
@@ -84,23 +86,38 @@ Public Class RoboGoalkeeperProject
         g.Dispose()
 
     End Sub
+    Function transform_XPixy(xHighByte#, xLowByte#) As Integer
+        Dim org_HighByte = CInt(xHighByte)
+        Dim org_LowByte = (CInt(xLowByte) Mod 256)
+        Dim pixels = (org_HighByte * 256) + org_LowByte
+        Dim pixels_Scaled = pixels * 204
+        Return pixels_Scaled
+    End Function
     '-------------------------------------------PIC16F1788 COM------------------------------------------------------------------
     Function lowByte_Steps_Conversion() As Integer
-        Dim lowByte = (CInt(StepsTextBox.Text) Mod 256)
-        Return lowByte
+        Try
+            Dim lowByte = (CInt(StepsTextBox.Text) Mod 256)
+            Return lowByte
+        Catch ex As Exception
+            MsgBox("Please, place a valid value for number of steps.", MsgBoxStyle.Critical, "Steps# Error!")
+        End Try
     End Function
     Function highByte_Steps_Conversion() As Integer
-        Dim highByte = CInt(StepsTextBox.Text) / 256
-        Return highByte
+        Try
+            Dim highByte = CInt(StepsTextBox.Text) / 256
+            Return highByte
+        Catch ex As Exception
+            MsgBox("Please, place a valid value for number of steps.", MsgBoxStyle.Critical, "Steps# Error!")
+        End Try
     End Function
     Private Sub PICSerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles PICSerialPort.DataReceived
-        Console.WriteLine(PICSerialPort.BytesToRead)
+        'Console.WriteLine(PICSerialPort.BytesToRead)
         Dim port_Data As Integer = PICSerialPort.BytesToRead
         Dim data(port_Data) As Byte
         PICSerialPort.Read(data, 0, port_Data)
-        For i = 0 To UBound(data)
-            Console.Write($"{Hex(data(i))} ")
-        Next
+        'For i = 0 To UBound(data)
+        '    Console.Write($"{Hex(data(i))} ")
+        'Next
         Console.WriteLine()
         'Console.Write($"{(data(1) / 256) + data(2)}")
         PICSerialPort.DiscardInBuffer()
@@ -140,7 +157,7 @@ Public Class RoboGoalkeeperProject
         Sleep(5)
         Dim rx_Data(PICSerialPort.BytesToRead) As Byte
         PICSerialPort.Read(rx_Data, 0, PICSerialPort.BytesToRead)
-        Console.WriteLine($"Homing Handshake = {Hex(rx_Data(0))}")
+        'Console.WriteLine($"Homing Handshake = {Hex(rx_Data(0))}")
     End Sub
     Private Sub SendButton_Click(sender As Object, e As EventArgs) Handles SendButton.Click
         HomeButton.Enabled = False

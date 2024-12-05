@@ -15,6 +15,11 @@ Public Class RoboGoalkeeperProject
     Dim cameraX As Integer
     Dim cameraWidth As Integer
     Dim motorX As Integer
+    Dim cameraXHighByte As Integer
+    Dim cameraXLowByte As Integer
+    Dim cameraWidthHighByte As Integer
+    Dim cameraWidthLowByte As Integer
+    Dim scaled_Pixy_X As Integer
 
     '--------------------------------------SERIAL COM---------------------------------------------------------------------------
     Sub SerialConnect1(portName As String)
@@ -55,22 +60,22 @@ Public Class RoboGoalkeeperProject
             Dim data(PixySerialPort.BytesToRead) As Byte
             PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
             If data(2) = &H55 And data(3) = &HAA And data(4) = &H55 And data(5) = &HAA And data.Length >= 18 Then
-                'For i = 0 To UBound(data)
-
-                '    Console.Write($"{Hex(data(i))} ")
-                'Next
+                Console.Write("Pixy Received Data: ")
+                For i = 0 To UBound(data)
+                    Console.Write($"{Hex(data(i))} ")
+                Next
                 'Console.WriteLine()
                 Draw_PixyPosition(data(11), data(12), data(10))
-                Console.WriteLine($"Pixels{((CInt(data(11))) * 256) + (CInt(data(10)) Mod 256)}")
-                Console.WriteLine($"Steps = {transform_XPixy(data(11), data(10))}")
+                'Console.WriteLine($"Camera Pixels Position Pixels{((CInt(data(11))) * 256) + (CInt(data(10)))}")
+                'Console.WriteLine($"Steps = {transform_XPixy(cameraXHighByte, cameraXLowByte)}")
             End If
-            Dim cameraXHighByte As Integer = CInt(data(11))
-            Dim cameraXLowByte As Integer = CInt(data(10))
-            Dim cameraWidthHighByte As Integer = CInt(data(15))
-            Dim cameraWidthLowByte As Integer = CInt(data(14))
+            cameraXHighByte = CInt(data(11))
+            cameraXLowByte = CInt(data(10))
+            cameraWidthHighByte = CInt(data(15))
+            cameraWidthLowByte = CInt(data(14))
             cameraX = (cameraXHighByte * 256) + cameraXLowByte
             cameraWidth = (cameraWidthHighByte * 256) + cameraWidthLowByte
-            PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
+            PixySerialPort.DiscardInBuffer()
         Catch ex As Exception
 
         End Try
@@ -81,7 +86,7 @@ Public Class RoboGoalkeeperProject
         Dim pen As New Pen(Color.Black)
         Static oldX#, oldY#
         Dim newX#
-        newX = ((highByte * 256) + lowByte)
+        newX = ((highByte * 255) + lowByte)
         g.FillRectangle(Brushes.Green, CInt(oldX), CInt(oldY), 20, 20)
         g.DrawImage(image, CInt(newX), CInt(newY), 20, 20)
         oldX = newX
@@ -97,17 +102,41 @@ Public Class RoboGoalkeeperProject
         End If
 
     End Sub
-    Function transform_XPixy(xHighByte#, xLowByte#) As Integer
-        Dim org_HighByte = CInt(xHighByte)
-        Dim org_LowByte = (CInt(xLowByte) Mod 256)
-        Dim pixels = (org_HighByte * 256) + org_LowByte
-        Dim pixels_Scaled = pixels * 204
-        Return pixels_Scaled
+    Function scale_PixyX(xHighByte#, xLowByte#) As Integer
+        Try
+            Dim org_LowByte = CInt(xLowByte)
+            Dim org_HighByte = CInt(xHighByte)
+            Dim scaled_X = ((org_HighByte * 255) * 204) + (org_LowByte * 204)
+            Return scaled_X
+
+        Catch ex As Exception
+
+        End Try
+    End Function
+    Function transform_XPixy_LB(xLowByte#) As Integer
+        Try
+            Dim org_LowByte = xLowByte
+            Dim scaled_X_LB = org_LowByte Mod 255
+            Return scaled_X_LB
+
+        Catch ex As Exception
+
+        End Try
+    End Function
+    Function transform_XPixy_HB(xHighByte#) As Integer
+        Try
+            Dim org_HighByte = xHighByte
+            Dim scaled_X_HB = org_HighByte / 255
+            Return scaled_X_HB
+
+        Catch ex As Exception
+
+        End Try
     End Function
     '-------------------------------------------PIC16F1788 COM------------------------------------------------------------------
     Function lowByte_Steps_Conversion() As Integer
         Try
-            Dim lowByte = (CInt(StepsTextBox.Text) Mod 256)
+            Dim lowByte = (CInt(StepsTextBox.Text) Mod 255)
             Return lowByte
         Catch ex As Exception
             MsgBox("Please, place a valid value for number of steps.", MsgBoxStyle.Critical, "Steps# Error!")
@@ -115,7 +144,7 @@ Public Class RoboGoalkeeperProject
     End Function
     Function highByte_Steps_Conversion() As Integer
         Try
-            Dim highByte = CInt(StepsTextBox.Text) / 256
+            Dim highByte = CInt(StepsTextBox.Text) / 255
             Return highByte
         Catch ex As Exception
             MsgBox("Please, place a valid value for number of steps.", MsgBoxStyle.Critical, "Steps# Error!")
@@ -127,10 +156,11 @@ Public Class RoboGoalkeeperProject
             Dim port_Data As Integer = PICSerialPort.BytesToRead
             Dim data(port_Data) As Byte
             PICSerialPort.Read(data, 0, port_Data)
-            'For i = 0 To UBound(data)
-            '    Console.Write($"{Hex(data(i))} ")
-            'Next
-            'Console.WriteLine()
+            Console.Write("PIC Received Data: ")
+            For i = 0 To UBound(data)
+                Console.Write($"{Hex(data(i))} ")
+            Next
+            Console.WriteLine()
             If data(0) = &H77 And data.Length >= 4 Then
                 Draw_MotorPosition(data(1), data(2))
 
@@ -149,8 +179,8 @@ Public Class RoboGoalkeeperProject
             pen2.Width = 5
             Static oldX#
             Dim newX#
-            newX = ((highByte * 256) + lowByte) / 204
-            Console.WriteLine($"Motor Position in Pixels = {newX}")
+            newX = ((highByte * 255) + lowByte) / 204
+            'Console.WriteLine($"Motor Position in Pixels = {newX}")
             g.DrawEllipse(pen2, CInt(oldX), 85, 20, 22)
             g.DrawEllipse(pen1, CInt(newX), 85, 20, 20)
             oldX = newX
@@ -198,6 +228,7 @@ Public Class RoboGoalkeeperProject
         image = ResizeImage(image, 20, 20)
         PositionPictureBox.BackColor = Color.Green
         Control.CheckForIllegalCrossThreadCalls = False
+
     End Sub
     Private Sub ExitButton_Click(sender As Object, e As EventArgs) Handles ExitButton.Click
         PixySerialPort.Close()
@@ -232,11 +263,32 @@ Public Class RoboGoalkeeperProject
         PICSerialPort.Read(rx_Data, 0, PICSerialPort.BytesToRead)
         HomeButton.Enabled = True
     End Sub
-    'Sub Display_Comparison()
-    '    If position_Comp() Then
-    '        Me.Text = "True!"
-    '    Else
-    '        Me.Text = "False :("
-    '    End If
-    'End Sub
+
+    Private Sub CommunicationTimer_Tick(sender As Object, e As EventArgs) Handles CommunicationTimer.Tick
+        If position_Comp() = False Then
+            Try
+
+                scaled_Pixy_X = scale_PixyX(cameraXHighByte, cameraXLowByte)
+                Dim pixy_Scaled_HB = transform_XPixy_HB(scaled_Pixy_X)
+                Dim pixy_Scaled_LB = transform_XPixy_LB(scaled_Pixy_X)
+                Dim tx_Data(2) As Byte
+                tx_Data(0) = &H5E
+                tx_Data(1) = pixy_Scaled_HB
+                tx_Data(2) = pixy_Scaled_LB
+                PICSerialPort.Write(tx_Data, 0, 3)
+            Catch ex As Exception
+
+            End Try
+        Else
+            Me.Text = "False :("
+        End If
+    End Sub
+
+    Private Sub TrackingCheckBox_CheckedChanged(sender As Object, e As EventArgs) Handles TrackingCheckBox.CheckedChanged
+        If TrackingCheckBox.Checked Then
+            CommunicationTimer.Start()
+        Else
+            CommunicationTimer.Stop()
+        End If
+    End Sub
 End Class

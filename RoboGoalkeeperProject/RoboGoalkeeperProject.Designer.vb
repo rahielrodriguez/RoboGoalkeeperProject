@@ -34,6 +34,8 @@ Partial Class RoboGoalkeeperProject
         Me.StepsTextBox = New System.Windows.Forms.TextBox()
         Me.Port2ComboBox = New System.Windows.Forms.ComboBox()
         Me.PICSerialPort = New System.IO.Ports.SerialPort(Me.components)
+        Me.CommunicationTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.TrackingCheckBox = New System.Windows.Forms.CheckBox()
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -123,11 +125,26 @@ Partial Class RoboGoalkeeperProject
         Me.PICSerialPort.BaudRate = 115200
         Me.PICSerialPort.ReceivedBytesThreshold = 4
         '
+        'CommunicationTimer
+        '
+        Me.CommunicationTimer.Interval = 200
+        '
+        'TrackingCheckBox
+        '
+        Me.TrackingCheckBox.AutoSize = True
+        Me.TrackingCheckBox.Location = New System.Drawing.Point(161, 290)
+        Me.TrackingCheckBox.Name = "TrackingCheckBox"
+        Me.TrackingCheckBox.Size = New System.Drawing.Size(129, 20)
+        Me.TrackingCheckBox.TabIndex = 11
+        Me.TrackingCheckBox.Text = "Tacking Camera"
+        Me.TrackingCheckBox.UseVisualStyleBackColor = True
+        '
         'RoboGoalkeeperProject
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(764, 410)
+        Me.Controls.Add(Me.TrackingCheckBox)
         Me.Controls.Add(Me.Port2ComboBox)
         Me.Controls.Add(Me.StepsTextBox)
         Me.Controls.Add(Me.HomeButton)
@@ -156,4 +173,6 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents StepsTextBox As TextBox
     Friend WithEvents Port2ComboBox As ComboBox
     Friend WithEvents PICSerialPort As IO.Ports.SerialPort
+    Friend WithEvents CommunicationTimer As Timer
+    Friend WithEvents TrackingCheckBox As CheckBox
 End Class

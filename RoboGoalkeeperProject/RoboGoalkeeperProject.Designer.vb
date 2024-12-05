@@ -46,6 +46,7 @@ Partial Class RoboGoalkeeperProject
         '
         'Port1ComboBox
         '
+        Me.Port1ComboBox.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.Port1ComboBox.FormattingEnabled = True
         Me.Port1ComboBox.Location = New System.Drawing.Point(98, 12)
         Me.Port1ComboBox.Name = "Port1ComboBox"
@@ -62,12 +63,15 @@ Partial Class RoboGoalkeeperProject
         Me.ComButton.Location = New System.Drawing.Point(6, 17)
         Me.ComButton.Name = "ComButton"
         Me.ComButton.Size = New System.Drawing.Size(143, 83)
-        Me.ComButton.TabIndex = 2
+        Me.ComButton.TabIndex = 4
         Me.ComButton.Text = "Com"
         Me.ComButton.UseVisualStyleBackColor = True
         '
         'PositionPictureBox
         '
+        Me.PositionPictureBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.PositionPictureBox.Location = New System.Drawing.Point(87, 42)
         Me.PositionPictureBox.Name = "PositionPictureBox"
         Me.PositionPictureBox.Size = New System.Drawing.Size(450, 240)
@@ -80,7 +84,7 @@ Partial Class RoboGoalkeeperProject
         Me.ExitButton.Location = New System.Drawing.Point(453, 17)
         Me.ExitButton.Name = "ExitButton"
         Me.ExitButton.Size = New System.Drawing.Size(143, 83)
-        Me.ExitButton.TabIndex = 6
+        Me.ExitButton.TabIndex = 7
         Me.ExitButton.Text = "Exit"
         Me.ExitButton.UseVisualStyleBackColor = True
         '
@@ -89,7 +93,7 @@ Partial Class RoboGoalkeeperProject
         Me.SendButton.Location = New System.Drawing.Point(155, 17)
         Me.SendButton.Name = "SendButton"
         Me.SendButton.Size = New System.Drawing.Size(143, 83)
-        Me.SendButton.TabIndex = 7
+        Me.SendButton.TabIndex = 5
         Me.SendButton.Text = "Set Position"
         Me.SendButton.UseVisualStyleBackColor = True
         '
@@ -98,24 +102,26 @@ Partial Class RoboGoalkeeperProject
         Me.HomeButton.Location = New System.Drawing.Point(304, 17)
         Me.HomeButton.Name = "HomeButton"
         Me.HomeButton.Size = New System.Drawing.Size(143, 83)
-        Me.HomeButton.TabIndex = 8
+        Me.HomeButton.TabIndex = 6
         Me.HomeButton.Text = "Go Home"
         Me.HomeButton.UseVisualStyleBackColor = True
         '
         'StepsTextBox
         '
+        Me.StepsTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom
         Me.StepsTextBox.Location = New System.Drawing.Point(167, 288)
         Me.StepsTextBox.Name = "StepsTextBox"
         Me.StepsTextBox.Size = New System.Drawing.Size(143, 22)
-        Me.StepsTextBox.TabIndex = 9
+        Me.StepsTextBox.TabIndex = 2
         '
         'Port2ComboBox
         '
+        Me.Port2ComboBox.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.Port2ComboBox.FormattingEnabled = True
         Me.Port2ComboBox.Location = New System.Drawing.Point(316, 12)
         Me.Port2ComboBox.Name = "Port2ComboBox"
         Me.Port2ComboBox.Size = New System.Drawing.Size(212, 24)
-        Me.Port2ComboBox.TabIndex = 10
+        Me.Port2ComboBox.TabIndex = 1
         '
         'PICSerialPort
         '
@@ -128,16 +134,18 @@ Partial Class RoboGoalkeeperProject
         '
         'TrackingCheckBox
         '
+        Me.TrackingCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom
         Me.TrackingCheckBox.AutoSize = True
         Me.TrackingCheckBox.Location = New System.Drawing.Point(316, 290)
         Me.TrackingCheckBox.Name = "TrackingCheckBox"
         Me.TrackingCheckBox.Size = New System.Drawing.Size(133, 20)
-        Me.TrackingCheckBox.TabIndex = 11
+        Me.TrackingCheckBox.TabIndex = 3
         Me.TrackingCheckBox.Text = "Tracking Camera"
         Me.TrackingCheckBox.UseVisualStyleBackColor = True
         '
         'ButtonsGroupBox
         '
+        Me.ButtonsGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom
         Me.ButtonsGroupBox.Controls.Add(Me.ComButton)
         Me.ButtonsGroupBox.Controls.Add(Me.ExitButton)
         Me.ButtonsGroupBox.Controls.Add(Me.SendButton)

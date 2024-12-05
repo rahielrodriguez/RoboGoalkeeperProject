@@ -12,6 +12,9 @@ Public Class RoboGoalkeeperProject
     ''' </summary>
     ''' <returns>Byte Array</returns>'
     Dim image As New Bitmap("C:\Users\Rahi\OneDrive\Desktop\ISU\Robotics\5th Semester\Final Project\RoboGoalkeeperProject\RoboGoalkeeperProject\Resources\Soccer Ball.png")
+    Dim cameraX As Integer
+    Dim cameraWidth As Integer
+    Dim motorX As Integer
 
     '--------------------------------------SERIAL COM---------------------------------------------------------------------------
     Sub SerialConnect1(portName As String)
@@ -33,7 +36,7 @@ Public Class RoboGoalkeeperProject
             Port1ComboBox.Items.Add($"{s}")
         Next
 
-        Port1ComboBox.SelectedIndex = 1
+        Port1ComboBox.SelectedIndex = 0
     End Sub
     Sub GetPorts2()
         Port2ComboBox.Items.Clear()
@@ -41,15 +44,13 @@ Public Class RoboGoalkeeperProject
             Port2ComboBox.Items.Add($"{s}")
         Next
 
-        Port2ComboBox.SelectedIndex = 0
+        Port2ComboBox.SelectedIndex = 1
     End Sub
     '-----------------------------------------PIXY FUNCTION---------------------------------------------------------------------
     Public Shared Function ResizeImage(ByVal InputBitmap As Bitmap, width As Integer, height As Integer) As Bitmap
         Return New Bitmap(InputBitmap, New Size(width, height))
     End Function
-    Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles PixySerialPort.DataReceived
-        'Dim steps_H As Integer
-        'Dim steps_L As Integer
+    Private Sub PixySerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles PixySerialPort.DataReceived
         Try
             Dim data(PixySerialPort.BytesToRead) As Byte
             PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
@@ -63,7 +64,12 @@ Public Class RoboGoalkeeperProject
                 Console.WriteLine($"Pixels{((CInt(data(11))) * 256) + (CInt(data(10)) Mod 256)}")
                 Console.WriteLine($"Steps = {transform_XPixy(data(11), data(10))}")
             End If
-
+            Dim cameraXHighByte As Integer = CInt(data(11))
+            Dim cameraXLowByte As Integer = CInt(data(10))
+            Dim cameraWidthHighByte As Integer = CInt(data(15))
+            Dim cameraWidthLowByte As Integer = CInt(data(14))
+            cameraX = (cameraXHighByte * 256) + cameraXLowByte
+            cameraWidth = (cameraWidthHighByte * 256) + cameraWidthLowByte
             PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
         Catch ex As Exception
 
@@ -80,10 +86,15 @@ Public Class RoboGoalkeeperProject
         g.DrawImage(image, CInt(newX), CInt(newY), 20, 20)
         oldX = newX
         oldY = newY
-
         'XLabel.Text = $"{newX}"
         pen.Dispose()
         g.Dispose()
+
+        If position_Comp() Then
+            Me.Text = "True!"
+        Else
+            Me.Text = "False :("
+        End If
 
     End Sub
     Function transform_XPixy(xHighByte#, xLowByte#) As Integer
@@ -111,17 +122,60 @@ Public Class RoboGoalkeeperProject
         End Try
     End Function
     Private Sub PICSerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles PICSerialPort.DataReceived
-        'Console.WriteLine(PICSerialPort.BytesToRead)
-        Dim port_Data As Integer = PICSerialPort.BytesToRead
-        Dim data(port_Data) As Byte
-        PICSerialPort.Read(data, 0, port_Data)
-        'For i = 0 To UBound(data)
-        '    Console.Write($"{Hex(data(i))} ")
-        'Next
-        Console.WriteLine()
-        'Console.Write($"{(data(1) / 256) + data(2)}")
-        PICSerialPort.DiscardInBuffer()
+        Try
+            'Console.WriteLine(PICSerialPort.BytesToRead)
+            Dim port_Data As Integer = PICSerialPort.BytesToRead
+            Dim data(port_Data) As Byte
+            PICSerialPort.Read(data, 0, port_Data)
+            'For i = 0 To UBound(data)
+            '    Console.Write($"{Hex(data(i))} ")
+            'Next
+            'Console.WriteLine()
+            If data(0) = &H77 And data.Length >= 4 Then
+                Draw_MotorPosition(data(1), data(2))
+
+            End If
+            PICSerialPort.DiscardInBuffer()
+
+        Catch ex As Exception
+
+        End Try
     End Sub
+    Sub Draw_MotorPosition(highByte#, lowByte#)
+        Try
+            Dim g As Graphics = PositionPictureBox.CreateGraphics
+            Dim pen1 As New Pen(Color.Red)
+            Dim pen2 As New Pen(Color.Green)
+            pen2.Width = 5
+            Static oldX#
+            Dim newX#
+            newX = ((highByte * 256) + lowByte) / 204
+            Console.WriteLine($"Motor Position in Pixels = {newX}")
+            g.DrawEllipse(pen2, CInt(oldX), 85, 20, 22)
+            g.DrawEllipse(pen1, CInt(newX), 85, 20, 20)
+            oldX = newX
+            motorX = newX
+            pen1.Dispose()
+            pen2.Dispose()
+            g.Dispose()
+        Catch ex As Exception
+
+        End Try
+
+        If position_Comp() Then
+            Me.Text = "True!"
+        Else
+            Me.Text = "False :("
+        End If
+
+    End Sub
+    Function position_Comp() As Boolean
+        If motorX > (cameraX - (cameraWidth / 2)) And motorX < (cameraX + (cameraWidth / 2)) Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
 
     '---------------------------------------------BUTTONS AND FORM----------------------------------------------------------------
     Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
@@ -136,18 +190,18 @@ Public Class RoboGoalkeeperProject
     Private Sub Port2ComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles Port2ComboBox.SelectedIndexChanged
         SerialConnect2(Port2ComboBox.SelectedItem)
     End Sub
-    Private Sub SerialComExample_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub RoboGoalkeeperProject_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         GetPorts1()
         GetPorts2()
-        Dim data1(PixySerialPort.BytesToRead) As Byte
-        PixySerialPort.Read(data1, 0, PixySerialPort.BytesToRead)
-        Dim data2(PICSerialPort.BytesToRead) As Byte
-        PICSerialPort.Read(data2, 0, PICSerialPort.BytesToRead)
+        PixySerialPort.DiscardInBuffer()
+        PICSerialPort.DiscardInBuffer()
         image = ResizeImage(image, 20, 20)
         PositionPictureBox.BackColor = Color.Green
-        XLabel.Text = ""
+        Control.CheckForIllegalCrossThreadCalls = False
     End Sub
     Private Sub ExitButton_Click(sender As Object, e As EventArgs) Handles ExitButton.Click
+        PixySerialPort.Close()
+        PICSerialPort.Close()
         Me.Close()
     End Sub
     Private Sub HomeButton_Click(sender As Object, e As EventArgs) Handles HomeButton.Click
@@ -178,4 +232,11 @@ Public Class RoboGoalkeeperProject
         PICSerialPort.Read(rx_Data, 0, PICSerialPort.BytesToRead)
         HomeButton.Enabled = True
     End Sub
+    'Sub Display_Comparison()
+    '    If position_Comp() Then
+    '        Me.Text = "True!"
+    '    Else
+    '        Me.Text = "False :("
+    '    End If
+    'End Sub
 End Class

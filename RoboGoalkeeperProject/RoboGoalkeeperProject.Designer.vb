@@ -34,7 +34,6 @@ Partial Class RoboGoalkeeperProject
         Me.StepsTextBox = New System.Windows.Forms.TextBox()
         Me.Port2ComboBox = New System.Windows.Forms.ComboBox()
         Me.PICSerialPort = New System.IO.Ports.SerialPort(Me.components)
-        Me.XLabel = New System.Windows.Forms.Label()
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -124,21 +123,11 @@ Partial Class RoboGoalkeeperProject
         Me.PICSerialPort.BaudRate = 115200
         Me.PICSerialPort.ReceivedBytesThreshold = 4
         '
-        'XLabel
-        '
-        Me.XLabel.AutoSize = True
-        Me.XLabel.Location = New System.Drawing.Point(161, 294)
-        Me.XLabel.Name = "XLabel"
-        Me.XLabel.Size = New System.Drawing.Size(49, 16)
-        Me.XLabel.TabIndex = 11
-        Me.XLabel.Text = "XLabel"
-        '
         'RoboGoalkeeperProject
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(764, 410)
-        Me.Controls.Add(Me.XLabel)
         Me.Controls.Add(Me.Port2ComboBox)
         Me.Controls.Add(Me.StepsTextBox)
         Me.Controls.Add(Me.HomeButton)
@@ -167,5 +156,4 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents StepsTextBox As TextBox
     Friend WithEvents Port2ComboBox As ComboBox
     Friend WithEvents PICSerialPort As IO.Ports.SerialPort
-    Friend WithEvents XLabel As Label
 End Class

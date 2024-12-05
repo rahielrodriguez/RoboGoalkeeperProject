@@ -60,21 +60,26 @@ Public Class RoboGoalkeeperProject
             Dim data(PixySerialPort.BytesToRead) As Byte
             PixySerialPort.Read(data, 0, PixySerialPort.BytesToRead)
             If data(2) = &H55 And data(3) = &HAA And data(4) = &H55 And data(5) = &HAA And data.Length >= 18 Then
-                Console.Write("Pixy Received Data: ")
-                For i = 0 To UBound(data)
-                    Console.Write($"{Hex(data(i))} ")
-                Next
+                'Console.Write("Pixy Received Data: ")
+                'For i = 0 To UBound(data)
+                '    Console.Write($"{Hex(data(i))} ")
+                'Next
                 'Console.WriteLine()
                 Draw_PixyPosition(data(11), data(12), data(10))
                 'Console.WriteLine($"Camera Pixels Position Pixels{((CInt(data(11))) * 256) + (CInt(data(10)))}")
                 'Console.WriteLine($"Steps = {transform_XPixy(cameraXHighByte, cameraXLowByte)}")
+                cameraXHighByte = CInt(data(11))
+                cameraXLowByte = CInt(data(10))
+                cameraWidthHighByte = CInt(data(15))
+                cameraWidthLowByte = CInt(data(14))
+                cameraX = (cameraXHighByte * 256) + cameraXLowByte
+                cameraWidth = (cameraWidthHighByte * 256) + cameraWidthLowByte
+                CameraXToolStripStatusLabel.Text = $"Pixy Received Data in Steps:{scaled_Pixy_X}"
+                Console.Write($"Pixy Cam Data Scaled = {Hex(transform_XPixy_HB(scaled_Pixy_X))} {Hex(transform_XPixy_LB(scaled_Pixy_X))}, ")
+                Console.WriteLine()
+                Console.Write($"Pixy Cam Original Data = {Hex(cameraXHighByte)} {Hex(cameraXLowByte)}")
+                Console.WriteLine()
             End If
-            cameraXHighByte = CInt(data(11))
-            cameraXLowByte = CInt(data(10))
-            cameraWidthHighByte = CInt(data(15))
-            cameraWidthLowByte = CInt(data(14))
-            cameraX = (cameraXHighByte * 256) + cameraXLowByte
-            cameraWidth = (cameraWidthHighByte * 256) + cameraWidthLowByte
             PixySerialPort.DiscardInBuffer()
         Catch ex As Exception
 
@@ -106,7 +111,7 @@ Public Class RoboGoalkeeperProject
         Try
             Dim org_LowByte = CInt(xLowByte)
             Dim org_HighByte = CInt(xHighByte)
-            Dim scaled_X = ((org_HighByte * 255) * 204) + (org_LowByte * 204)
+            Dim scaled_X = (((org_HighByte * 255) * 204) + (org_LowByte * 204))
             Return scaled_X
 
         Catch ex As Exception
@@ -163,7 +168,7 @@ Public Class RoboGoalkeeperProject
             Console.WriteLine()
             If data(0) = &H77 And data.Length >= 4 Then
                 Draw_MotorPosition(data(1), data(2))
-
+                MotorXToolStripStatusLabel.Text = $"PIC Received Data in Steps: {(data(1) * 255) + data(2)}"
             End If
             PICSerialPort.DiscardInBuffer()
 
@@ -263,16 +268,24 @@ Public Class RoboGoalkeeperProject
 
     Private Sub CommunicationTimer_Tick(sender As Object, e As EventArgs) Handles CommunicationTimer.Tick
         If position_Comp() = False Then
+            scaled_Pixy_X = 0
             Try
-
+                MotorXToolStripStatusLabel.Text = ""
+                CameraXToolStripStatusLabel.Text = ""
                 scaled_Pixy_X = scale_PixyX(cameraXHighByte, cameraXLowByte)
-                Dim pixy_Scaled_HB = transform_XPixy_HB(scaled_Pixy_X)
-                Dim pixy_Scaled_LB = transform_XPixy_LB(scaled_Pixy_X)
-                Dim tx_Data(2) As Byte
-                tx_Data(0) = &H5E
-                tx_Data(1) = pixy_Scaled_HB
-                tx_Data(2) = pixy_Scaled_LB
-                PICSerialPort.Write(tx_Data, 0, 3)
+                If scaled_Pixy_X < 64500 Then
+
+                    Dim pixy_Scaled_HB = transform_XPixy_HB(scaled_Pixy_X)
+                    Dim pixy_Scaled_LB = transform_XPixy_LB(scaled_Pixy_X)
+                    Dim tx_Data(2) As Byte
+                    tx_Data(0) = &H5E
+                    tx_Data(1) = pixy_Scaled_HB
+                    tx_Data(2) = pixy_Scaled_LB
+                    PICSerialPort.Write(tx_Data, 0, 3)
+                Else
+                    Console.WriteLine()
+                    'MsgBox("Issue with camera data transformation", MsgBoxStyle.Critical, "error")
+                End If
             Catch ex As Exception
 
             End Try
@@ -284,7 +297,9 @@ Public Class RoboGoalkeeperProject
     Private Sub TrackingCheckBox_CheckedChanged(sender As Object, e As EventArgs) Handles TrackingCheckBox.CheckedChanged
         If TrackingCheckBox.Checked Then
             CommunicationTimer.Start()
+            SendButton.Enabled = False
         Else
+            SendButton.Enabled = True
             CommunicationTimer.Stop()
         End If
     End Sub

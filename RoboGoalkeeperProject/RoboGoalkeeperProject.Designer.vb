@@ -36,8 +36,12 @@ Partial Class RoboGoalkeeperProject
         Me.CommunicationTimer = New System.Windows.Forms.Timer(Me.components)
         Me.TrackingCheckBox = New System.Windows.Forms.CheckBox()
         Me.ButtonsGroupBox = New System.Windows.Forms.GroupBox()
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.CameraXToolStripStatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.MotorXToolStripStatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ButtonsGroupBox.SuspendLayout()
+        Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'Port1ComboBox
@@ -127,9 +131,9 @@ Partial Class RoboGoalkeeperProject
         Me.TrackingCheckBox.AutoSize = True
         Me.TrackingCheckBox.Location = New System.Drawing.Point(316, 290)
         Me.TrackingCheckBox.Name = "TrackingCheckBox"
-        Me.TrackingCheckBox.Size = New System.Drawing.Size(129, 20)
+        Me.TrackingCheckBox.Size = New System.Drawing.Size(133, 20)
         Me.TrackingCheckBox.TabIndex = 11
-        Me.TrackingCheckBox.Text = "Tacking Camera"
+        Me.TrackingCheckBox.Text = "Tracking Camera"
         Me.TrackingCheckBox.UseVisualStyleBackColor = True
         '
         'ButtonsGroupBox
@@ -144,13 +148,36 @@ Partial Class RoboGoalkeeperProject
         Me.ButtonsGroupBox.TabIndex = 12
         Me.ButtonsGroupBox.TabStop = False
         '
+        'StatusStrip1
+        '
+        Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(20, 20)
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CameraXToolStripStatusLabel, Me.MotorXToolStripStatusLabel})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 435)
+        Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.Size = New System.Drawing.Size(626, 26)
+        Me.StatusStrip1.TabIndex = 13
+        Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'CameraXToolStripStatusLabel
+        '
+        Me.CameraXToolStripStatusLabel.Name = "CameraXToolStripStatusLabel"
+        Me.CameraXToolStripStatusLabel.Size = New System.Drawing.Size(205, 20)
+        Me.CameraXToolStripStatusLabel.Text = "CameraXToolStripStatusLabel"
+        '
+        'MotorXToolStripStatusLabel
+        '
+        Me.MotorXToolStripStatusLabel.Name = "MotorXToolStripStatusLabel"
+        Me.MotorXToolStripStatusLabel.Size = New System.Drawing.Size(195, 20)
+        Me.MotorXToolStripStatusLabel.Text = "MotorXToolStripStatusLabel"
+        '
         'RoboGoalkeeperProject
         '
         Me.AcceptButton = Me.HomeButton
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.ExitButton
-        Me.ClientSize = New System.Drawing.Size(626, 437)
+        Me.ClientSize = New System.Drawing.Size(626, 461)
+        Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.ButtonsGroupBox)
         Me.Controls.Add(Me.TrackingCheckBox)
         Me.Controls.Add(Me.Port2ComboBox)
@@ -161,6 +188,8 @@ Partial Class RoboGoalkeeperProject
         Me.Text = "RoboGoalkeeper"
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ButtonsGroupBox.ResumeLayout(False)
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -179,4 +208,7 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents CommunicationTimer As Timer
     Friend WithEvents TrackingCheckBox As CheckBox
     Friend WithEvents ButtonsGroupBox As GroupBox
+    Friend WithEvents StatusStrip1 As StatusStrip
+    Friend WithEvents CameraXToolStripStatusLabel As ToolStripStatusLabel
+    Friend WithEvents MotorXToolStripStatusLabel As ToolStripStatusLabel
 End Class

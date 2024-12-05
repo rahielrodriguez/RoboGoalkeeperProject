@@ -208,9 +208,6 @@ Public Class RoboGoalkeeperProject
     End Function
 
     '---------------------------------------------BUTTONS AND FORM----------------------------------------------------------------
-    Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
-        PositionPictureBox.Refresh()
-    End Sub
     Private Sub ComButton_Click(sender As Object, e As EventArgs) Handles ComButton.Click
         GetPorts1()
     End Sub
@@ -280,7 +277,7 @@ Public Class RoboGoalkeeperProject
 
             End Try
         Else
-            Me.Text = "False :("
+
         End If
     End Sub
 

@@ -27,7 +27,6 @@ Partial Class RoboGoalkeeperProject
         Me.PixySerialPort = New System.IO.Ports.SerialPort(Me.components)
         Me.ComButton = New System.Windows.Forms.Button()
         Me.PositionPictureBox = New System.Windows.Forms.PictureBox()
-        Me.ClearButton = New System.Windows.Forms.Button()
         Me.ExitButton = New System.Windows.Forms.Button()
         Me.SendButton = New System.Windows.Forms.Button()
         Me.HomeButton = New System.Windows.Forms.Button()
@@ -36,13 +35,15 @@ Partial Class RoboGoalkeeperProject
         Me.PICSerialPort = New System.IO.Ports.SerialPort(Me.components)
         Me.CommunicationTimer = New System.Windows.Forms.Timer(Me.components)
         Me.TrackingCheckBox = New System.Windows.Forms.CheckBox()
+        Me.ButtonsGroupBox = New System.Windows.Forms.GroupBox()
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.ButtonsGroupBox.SuspendLayout()
         Me.SuspendLayout()
         '
         'Port1ComboBox
         '
         Me.Port1ComboBox.FormattingEnabled = True
-        Me.Port1ComboBox.Location = New System.Drawing.Point(12, 12)
+        Me.Port1ComboBox.Location = New System.Drawing.Point(98, 12)
         Me.Port1ComboBox.Name = "Port1ComboBox"
         Me.Port1ComboBox.Size = New System.Drawing.Size(212, 24)
         Me.Port1ComboBox.TabIndex = 0
@@ -54,7 +55,7 @@ Partial Class RoboGoalkeeperProject
         '
         'ComButton
         '
-        Me.ComButton.Location = New System.Drawing.Point(12, 316)
+        Me.ComButton.Location = New System.Drawing.Point(6, 17)
         Me.ComButton.Name = "ComButton"
         Me.ComButton.Size = New System.Drawing.Size(143, 83)
         Me.ComButton.TabIndex = 2
@@ -63,24 +64,16 @@ Partial Class RoboGoalkeeperProject
         '
         'PositionPictureBox
         '
-        Me.PositionPictureBox.Location = New System.Drawing.Point(12, 42)
+        Me.PositionPictureBox.Location = New System.Drawing.Point(87, 42)
         Me.PositionPictureBox.Name = "PositionPictureBox"
         Me.PositionPictureBox.Size = New System.Drawing.Size(450, 240)
         Me.PositionPictureBox.TabIndex = 3
         Me.PositionPictureBox.TabStop = False
         '
-        'ClearButton
-        '
-        Me.ClearButton.Location = New System.Drawing.Point(459, 316)
-        Me.ClearButton.Name = "ClearButton"
-        Me.ClearButton.Size = New System.Drawing.Size(143, 83)
-        Me.ClearButton.TabIndex = 4
-        Me.ClearButton.Text = "Clear"
-        Me.ClearButton.UseVisualStyleBackColor = True
-        '
         'ExitButton
         '
-        Me.ExitButton.Location = New System.Drawing.Point(608, 316)
+        Me.ExitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.ExitButton.Location = New System.Drawing.Point(453, 17)
         Me.ExitButton.Name = "ExitButton"
         Me.ExitButton.Size = New System.Drawing.Size(143, 83)
         Me.ExitButton.TabIndex = 6
@@ -89,7 +82,7 @@ Partial Class RoboGoalkeeperProject
         '
         'SendButton
         '
-        Me.SendButton.Location = New System.Drawing.Point(161, 316)
+        Me.SendButton.Location = New System.Drawing.Point(155, 17)
         Me.SendButton.Name = "SendButton"
         Me.SendButton.Size = New System.Drawing.Size(143, 83)
         Me.SendButton.TabIndex = 7
@@ -98,7 +91,7 @@ Partial Class RoboGoalkeeperProject
         '
         'HomeButton
         '
-        Me.HomeButton.Location = New System.Drawing.Point(310, 316)
+        Me.HomeButton.Location = New System.Drawing.Point(304, 17)
         Me.HomeButton.Name = "HomeButton"
         Me.HomeButton.Size = New System.Drawing.Size(143, 83)
         Me.HomeButton.TabIndex = 8
@@ -107,7 +100,7 @@ Partial Class RoboGoalkeeperProject
         '
         'StepsTextBox
         '
-        Me.StepsTextBox.Location = New System.Drawing.Point(12, 288)
+        Me.StepsTextBox.Location = New System.Drawing.Point(167, 288)
         Me.StepsTextBox.Name = "StepsTextBox"
         Me.StepsTextBox.Size = New System.Drawing.Size(143, 22)
         Me.StepsTextBox.TabIndex = 9
@@ -115,7 +108,7 @@ Partial Class RoboGoalkeeperProject
         'Port2ComboBox
         '
         Me.Port2ComboBox.FormattingEnabled = True
-        Me.Port2ComboBox.Location = New System.Drawing.Point(230, 12)
+        Me.Port2ComboBox.Location = New System.Drawing.Point(316, 12)
         Me.Port2ComboBox.Name = "Port2ComboBox"
         Me.Port2ComboBox.Size = New System.Drawing.Size(212, 24)
         Me.Port2ComboBox.TabIndex = 10
@@ -132,31 +125,42 @@ Partial Class RoboGoalkeeperProject
         'TrackingCheckBox
         '
         Me.TrackingCheckBox.AutoSize = True
-        Me.TrackingCheckBox.Location = New System.Drawing.Point(161, 290)
+        Me.TrackingCheckBox.Location = New System.Drawing.Point(316, 290)
         Me.TrackingCheckBox.Name = "TrackingCheckBox"
         Me.TrackingCheckBox.Size = New System.Drawing.Size(129, 20)
         Me.TrackingCheckBox.TabIndex = 11
         Me.TrackingCheckBox.Text = "Tacking Camera"
         Me.TrackingCheckBox.UseVisualStyleBackColor = True
         '
+        'ButtonsGroupBox
+        '
+        Me.ButtonsGroupBox.Controls.Add(Me.ComButton)
+        Me.ButtonsGroupBox.Controls.Add(Me.ExitButton)
+        Me.ButtonsGroupBox.Controls.Add(Me.SendButton)
+        Me.ButtonsGroupBox.Controls.Add(Me.HomeButton)
+        Me.ButtonsGroupBox.Location = New System.Drawing.Point(12, 316)
+        Me.ButtonsGroupBox.Name = "ButtonsGroupBox"
+        Me.ButtonsGroupBox.Size = New System.Drawing.Size(603, 111)
+        Me.ButtonsGroupBox.TabIndex = 12
+        Me.ButtonsGroupBox.TabStop = False
+        '
         'RoboGoalkeeperProject
         '
+        Me.AcceptButton = Me.HomeButton
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(764, 410)
+        Me.CancelButton = Me.ExitButton
+        Me.ClientSize = New System.Drawing.Size(626, 437)
+        Me.Controls.Add(Me.ButtonsGroupBox)
         Me.Controls.Add(Me.TrackingCheckBox)
         Me.Controls.Add(Me.Port2ComboBox)
         Me.Controls.Add(Me.StepsTextBox)
-        Me.Controls.Add(Me.HomeButton)
-        Me.Controls.Add(Me.SendButton)
-        Me.Controls.Add(Me.ExitButton)
-        Me.Controls.Add(Me.ClearButton)
         Me.Controls.Add(Me.PositionPictureBox)
-        Me.Controls.Add(Me.ComButton)
         Me.Controls.Add(Me.Port1ComboBox)
         Me.Name = "RoboGoalkeeperProject"
         Me.Text = "RoboGoalkeeper"
         CType(Me.PositionPictureBox, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ButtonsGroupBox.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -166,7 +170,6 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents PixySerialPort As IO.Ports.SerialPort
     Friend WithEvents ComButton As Button
     Friend WithEvents PositionPictureBox As PictureBox
-    Friend WithEvents ClearButton As Button
     Friend WithEvents ExitButton As Button
     Friend WithEvents SendButton As Button
     Friend WithEvents HomeButton As Button
@@ -175,4 +178,5 @@ Partial Class RoboGoalkeeperProject
     Friend WithEvents PICSerialPort As IO.Ports.SerialPort
     Friend WithEvents CommunicationTimer As Timer
     Friend WithEvents TrackingCheckBox As CheckBox
+    Friend WithEvents ButtonsGroupBox As GroupBox
 End Class

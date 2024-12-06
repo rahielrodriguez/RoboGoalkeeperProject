@@ -15,6 +15,8 @@ Public Class RoboGoalkeeperProject
     Dim cameraX As Integer
     Dim cameraWidth As Integer
     Dim motorX As Integer
+    Dim motorX_HB As Integer
+    Dim motorX_LB As Integer
     Dim cameraXHighByte As Integer
     Dim cameraXLowByte As Integer
     Dim cameraWidthHighByte As Integer
@@ -171,10 +173,12 @@ Public Class RoboGoalkeeperProject
                 MotorXToolStripStatusLabel.Text = $"PIC Received Data in Steps: {(data(1) * 255) + data(2)}"
             End If
             PICSerialPort.DiscardInBuffer()
-
+            motorX_HB = data(1)
+            motorX_LB = data(2)
         Catch ex As Exception
 
         End Try
+
     End Sub
     Sub Draw_MotorPosition(highByte#, lowByte#)
         Try
@@ -238,6 +242,7 @@ Public Class RoboGoalkeeperProject
         Me.Close()
     End Sub
     Private Sub HomeButton_Click(sender As Object, e As EventArgs) Handles HomeButton.Click
+        TrackingCheckBox.Checked = False
         Dim tx_Data(0) As Byte
         tx_Data(0) = &H24
         PICSerialPort.Write(tx_Data, 0, 1)
